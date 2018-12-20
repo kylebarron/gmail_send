@@ -13,10 +13,24 @@ def send(
         from_addr,
         subject,
         msg,
+        text_format='plain',
         client_secret_path='~/.config/gmail_send/client_secret.json',
-        credential_path='~/.credentials/gmail_send.json',
-        verbose=False):
-    """Send email through gmail"""
+        credential_path='~/.credentials/gmail_send.json'):
+    """Send email through gmail
+
+    Args:
+        to_addr (str): address to send email to
+        from_addr (str): address that is sending the email
+        subject (str): subject of email
+        msg (str): email body text
+        text_format (str): either 'plain' for plain text or 'html' for
+            HTML-formatted text
+        client_secret_path (str): path to client_secret.json
+        credential_path (str): path to credentials object
+
+    Returns:
+        (bool): True if email was successfully sent; False otherwise
+    """
 
     # API info
     # --------
@@ -33,16 +47,18 @@ def send(
     messages = discovery.build('gmail', 'v1', http=http).users().messages()
 
     message_object = create_message(
-        sender=from_addr, to=to_addr, subject=subject, message_text=msg)
+        sender=from_addr,
+        to=to_addr,
+        subject=subject,
+        message_text=msg,
+        text_format=text_format)
 
     try:
-        if verbose:
-            print('Sending message')
         messages.send(userId='me', body=message_object).execute()
-        if verbose:
-            print('Message sent')
+        return True
     except Exception as e:
         print(e)
+        return False
 
 
 def get_credentials(client_secret_path, scopes, credential_path, flags=None):
@@ -64,7 +80,7 @@ def get_credentials(client_secret_path, scopes, credential_path, flags=None):
     return credentials
 
 
-def create_message(sender, to, subject, message_text):
+def create_message(sender, to, subject, message_text, text_format='plain'):
     """Create a message for an email.
 
     Args:
@@ -76,7 +92,7 @@ def create_message(sender, to, subject, message_text):
     Returns:
         An object containing a base64url encoded email object.
     """
-    message = MIMEText(message_text)
+    message = MIMEText(message_text, text_format)
     message['to'] = to
     message['from'] = sender
     message['subject'] = subject

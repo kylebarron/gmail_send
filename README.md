@@ -39,11 +39,31 @@ Your web browser should open to the Gmail authentication page.
 ```python
 from gmail_send import send
 
-send(to_addr='to@example.com', from_addr='from@gmail.com', subject='subject', msg='message')
+send(
+    to_addr='to@example.com',
+    from_addr='from@gmail.com',
+    subject='subject',
+    msg='message',
+    text_format='plain')
+```
+
+### Full API
+
+```
+Args:
+    to_addr (str): address to send email to
+    from_addr (str): address that is sending the email
+    subject (str): subject of email
+    msg (str): email body text
+    text_format (str): either 'plain' for plain text or 'html' for
+        HTML-formatted text
+
+Returns:
+    (bool): True if email was successfully sent; False otherwise
 ```
 
 ## Requirements
 
-Python 3.6
+Python 3.6; Python 3.5 may work
 
 
